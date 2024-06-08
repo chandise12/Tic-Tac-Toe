@@ -5,9 +5,9 @@
 int main();
 void displayBoard(char board [3][3]); //displays the board
 void hasWon(char board [3][3], int turn, bool &isWon); //determines if a player has won after each round
-bool hasTied(char board [3][3], bool &isTie); // determines if the game is tied; called after isWon
+void hasTied(char board [3][3], bool &isTie); // determines if the game is tied; called after isWon
 void player_turn(char (&board)[3][3], int turn); //runs through 1 player's turn 
-void gameplay(char (&board)[3][3], bool isWon, bool isTie); 
+void gameplay(char (&board)[3][3]); 
 
 
 
@@ -15,8 +15,6 @@ void gameplay(char (&board)[3][3], bool isWon, bool isTie);
 int main(){
 
     char board[3][3];
-    bool isWon = false; //determines if a player has won after each round
-    bool isTie = false; //determines if the game is tied; called after isWon
 
     //make all values of the board initially empty
     for (int i = 0; i < 3; i++){
@@ -27,7 +25,7 @@ int main(){
 
     //Game Start
 
-    gameplay(board, isWon, isTie);
+    gameplay(board);
 
    return 0; 
 }
@@ -65,30 +63,29 @@ void hasWon(char board [3][3], int turn, bool &isWon){
         value = 'O';
     }
 
-    bool Win = false;
 
     //check each row
     for(int i = 0; i < 3; i++){
         if(board[i][0] == value && board[i][1] == value && board[i][2] == value){
-            Win = true;
+            isWon = true;
         }
     }
 
     //check each column
     for(int i = 0; i < 3; i++){
         if(board[0][i] == value && board[1][i] == value && board[2][i] == value){
-            Win = true;
+            isWon = true;
         }
     }
 
     //check diagonals
     if(board[0][0] == value && board[1][1] == value && board[2][2] == value){
-        Win = true;
+        isWon = true;
     }else if(board[2][0] == value && board[1][1] == value && board[0][2] == value){
-        Win = true;
+        isWon = true;
     }
     
-    if(Win){
+    if(isWon){
         std::cout << "Player " << player << " wins!\n";
     }
 }
@@ -96,17 +93,17 @@ void hasWon(char board [3][3], int turn, bool &isWon){
 
 
 
-bool hasTied(char board [3][3], bool &isTie){
+void hasTied(char board [3][3], bool &isTie){
     for(int i = 0; i < 3; i++){
             for (int j = 0; j < 3; j++){
                 if(board[i][j] == ' '){
-                    return false;
+                    return;
                 }
             }
         }
         
         std::cout << "Its a tie! Game over!\n";
-        return true;
+        isTie = true;
 }
 
 
@@ -159,7 +156,7 @@ void player_turn(char (&board)[3][3], int turn){
         }
         
         //requirements for a valid coordinate
-        if(!error && 0 <= xcoord && xcoord <= 2 && 0 <= ycoord && ycoord <= 2 && board[ycoord][xcoord] == ' '){
+        if(!error && 0 <= xcoord && xcoord <= 2 && 0 <= ycoord && ycoord <= 2 && board[ycoord][xcoord] == ' ' && coordinate.length() == 3 && coordinate.at(1) == ','){
             validCoord = true;
         }
     }
@@ -168,14 +165,17 @@ void player_turn(char (&board)[3][3], int turn){
 
 }
 
-void gameplay(char (&board)[3][3], bool isWon, bool isTie){
+void gameplay(char (&board)[3][3]){
+    bool isWon = false; //determines if a player has won after each round
+    bool isTie = false; //determines if the game is tied; called after isWon
+    
     std::cout << "Welcome, players!";
     std::cout << "Player 1: X \nPlayer 2: O \n";
 
     displayBoard(board);
     
     //uses a for loop to keep track of which player's turn: 0 - Player 1, 1 - Player 2
-    for(int i = 0; !isWon || !isTie; i++){ 
+    for(int i = 0; !isWon && !isTie; i++){ 
     
         //modifies one value of the board for each player's turn
         player_turn(board, i);
@@ -185,14 +185,8 @@ void gameplay(char (&board)[3][3], bool isWon, bool isTie){
 
         //check if the player won this turn or if the game has tied
         hasWon(board, i, isWon);
-        // if(isWon){
-        //     return;
-        // }
 
         hasTied(board, isTie);
-        if(isTie){
-            return;
-        }
 
     }
 }
