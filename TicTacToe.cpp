@@ -186,7 +186,9 @@ void gameplay(char (&board)[3][3]){
         //check if the player won this turn or if the game has tied
         hasWon(board, i, isWon);
 
-        hasTied(board, isTie);
+        if (!isWon){ //if the player hasn't won, check if it's a tie
+            hasTied(board, isTie);
+        }
 
     }
 }
